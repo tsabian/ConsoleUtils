@@ -6,6 +6,8 @@ namespace LocalSendEmail.Term
     {
         private static void Main(string[] args)
         {
+            Console.Clear();
+
             if (args.Length == 0)
             {
                 Console.WriteLine(MessageConstants.ArgumentsFaultExceptionMessage);

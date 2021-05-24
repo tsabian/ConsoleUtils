@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
@@ -9,6 +10,75 @@ namespace LocalSendEmail.Term
     {
 
         private readonly string[] args;
+
+        private readonly Dictionary<string, string> _templatePixNotification = new() {
+            { "cid:Template-geral_01.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_01.png" },
+            { "${title}", "Transferência enviada via Pix" },
+            { "${internalBody}", @"
+                                                <tr>
+                                                    <td align=""left"" style=""padding:0;padding-bottom:20px;word-break:break-word;"">
+                                                        <div
+                                                            style=""font-family: 'Ubuntu', sans-serif; font-size:22px; font-weight:bold; line-height:1.5; text-align:left;color:#ef3e64;"">
+                                                            <p>Você recebeu R$ ${amount} via transferência Pix com sucesso</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align=""left"" style=""padding:0;padding-bottom:30px;word-break:break-word;"">
+                                                        <p>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            <b>Dados do pagador</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Nome: <b>${payerName}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            CPF/CNPJ: <b>${payerDocument}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Instituição: <b>${payerBankName}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Agência nº: <b>${payerBranch}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Conta nº: <b>${payerAccount}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Tipo: <b>${payerAccountType}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Data e hora: <b>${transactionDate} às ${transactionHour}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Descrição: <b>${payerAnswer}</b>
+                                                        </div>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align=""left"" style=""padding:0;padding-bottom:30px;word-break:break-word;"">
+                                                        <p>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            <b>Dados do recebedor</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Nome: <b>${receiverName}</b>
+                                                        </div>
+                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
+                                                            Instituição: <b>${receiverBankName}</b>
+                                                        </div>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+" },
+            { "cid:Template-geral_04.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_04.png" },
+            { "cid:Facebook.png", "https://bitz-email-assets.s3.amazonaws.com/Facebook.png" },
+            { "cid:Linkedin.png", "https://bitz-email-assets.s3.amazonaws.com/Linkedin.png" },
+            { "cid:Twitter.png", "https://bitz-email-assets.s3.amazonaws.com/Twitter.png" },
+            { "cid:youtube.png", "https://bitz-email-assets.s3.amazonaws.com/youtube.png" },
+            { "cid:Instagram.png", "https://bitz-email-assets.s3.amazonaws.com/Instagram.png" }
+        };
 
         public SendMailCommand(string[] args)
         {
@@ -21,6 +91,7 @@ namespace LocalSendEmail.Term
             {
                 string path = CommandArgsConstants.SendMailArgs.FilePathArg.GetArgValue<string>(args);
                 string body = ReadFile(path);
+                Console.WriteLine(body);
                 NetworkCredential credentials = GetLogin(args);
                 string subject = CommandArgsConstants.SendMailArgs.SubjectArg.GetArgValue<string>(args);
                 string destination = CommandArgsConstants.SendMailArgs.DestinationArg.GetArgValue<string>(args);
@@ -48,7 +119,16 @@ namespace LocalSendEmail.Term
                 fileBody = stream.ReadToEnd();
             }
 
-            return fileBody;
+            return TagReplacing(fileBody);
+        }
+
+        private string TagReplacing(string body)
+        {
+            foreach(var tag in _templatePixNotification)
+            {
+                body = body.Replace(tag.Key, tag.Value);
+            }
+            return body;
         }
 
         private NetworkCredential GetLogin(string[] args)
