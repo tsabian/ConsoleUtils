@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 
-namespace LocalSendEmail.Term
+namespace Utilities.Term
 {
     internal class SendMailCommand: ICommand
     {

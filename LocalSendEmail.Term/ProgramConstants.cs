@@ -1,4 +1,4 @@
-﻿namespace LocalSendEmail.Term
+﻿namespace Utilities.Term
 {
     internal class ProgramConstants
     {
