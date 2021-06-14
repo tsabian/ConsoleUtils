@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSendEmail.Term", "LocalSendEmail.Term\LocalSendEmail.Term.csproj", "{21C7CB5A-5A4F-4526-B50A-46B579547FAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities.Term", "LocalSendEmail.Term\Utilities.Term.csproj", "{21C7CB5A-5A4F-4526-B50A-46B579547FAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
