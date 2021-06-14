@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LocalSendEmail.Term
+namespace Utilities.Term
 {
     internal static class ProgramExtensions
     {

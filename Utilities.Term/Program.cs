@@ -1,11 +1,13 @@
 ﻿using System;
 
-namespace LocalSendEmail.Term
+namespace Utilities.Term
 {
     internal class Program
     {
         private static void Main(string[] args)
         {
+            Console.Clear();
+
             if (args.Length == 0)
             {
                 Console.WriteLine(MessageConstants.ArgumentsFaultExceptionMessage);
