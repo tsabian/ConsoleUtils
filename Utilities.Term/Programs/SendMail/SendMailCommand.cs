@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 
-namespace Utilities.Term
+namespace Utilities.Term.Programs.SendMail
 {
     internal class SendMailCommand: ICommand
     {
@@ -89,13 +89,13 @@ namespace Utilities.Term
         {
             try
             {
-                string path = CommandArgsConstants.SendMailArgs.FilePathArg.GetArgValue<string>(args);
+                string path = SendMailArgs.FilePathArg.GetArgValue<string>(args);
                 string body = ReadFile(path);
                 Console.WriteLine(body);
                 NetworkCredential credentials = GetLogin(args);
-                string subject = CommandArgsConstants.SendMailArgs.SubjectArg.GetArgValue<string>(args);
-                string destination = CommandArgsConstants.SendMailArgs.DestinationArg.GetArgValue<string>(args);
-                string attachment = CommandArgsConstants.SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(args);
+                string subject = SendMailArgs.SubjectArg.GetArgValue<string>(args);
+                string destination = SendMailArgs.DestinationArg.GetArgValue<string>(args);
+                string attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(args);
                 SendEmail(subject, body, destination, credentials, attachment);
             }
             catch (FileNotFoundException e)
@@ -110,7 +110,7 @@ namespace Utilities.Term
 
         private string ReadFile(string filePath)
         {
-            if (!File.Exists(filePath)) throw new FileNotFoundException(MessageConstants.TemplatePathNotFound);
+            if (!File.Exists(filePath)) throw new FileNotFoundException(SendMailMessages.TemplatePathNotFound);
 
             string fileBody = string.Empty;
 
@@ -133,10 +133,10 @@ namespace Utilities.Term
 
         private NetworkCredential GetLogin(string[] args)
         {
-            string username = ProgramConstants.SmtpUserName;
-            string password = ProgramConstants.SmtpUserPassword;
-            string paramUserName = CommandArgsConstants.SendMailArgs.UserNameArg.GetArgValue<string>(args);
-            string paramUserPassword = CommandArgsConstants.SendMailArgs.UserPasswordArg.GetArgValue<string>(args);
+            string username = SendEmailConstants.SmtpUserName;
+            string password = SendEmailConstants.SmtpUserPassword;
+            string paramUserName = SendMailArgs.UserNameArg.GetArgValue<string>(args);
+            string paramUserPassword = SendMailArgs.UserPasswordArg.GetArgValue<string>(args);
 
             if (!string.IsNullOrEmpty(paramUserName) || !string.IsNullOrWhiteSpace(paramUserName))
             {
@@ -151,11 +151,11 @@ namespace Utilities.Term
 
         private void SendEmail(string subject, string body, string destination, NetworkCredential credential, string attachmentFilePath = null)
         {
-            using SmtpClient client = new(ProgramConstants.SmtpHost, ProgramConstants.SmtpPort)
+            using SmtpClient client = new(SendEmailConstants.SmtpHost, SendEmailConstants.SmtpPort)
             {
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = ProgramConstants.UseDefaultCredentials,
-                EnableSsl = ProgramConstants.UseSmtpSsl,
+                UseDefaultCredentials = SendEmailConstants.UseDefaultCredentials,
+                EnableSsl = SendEmailConstants.UseSmtpSsl,
                 Credentials = credential
             };
 
@@ -171,7 +171,7 @@ namespace Utilities.Term
             MailMessage mailMessage = new(from, to)
             {
                 Body = body,
-                IsBodyHtml = ProgramConstants.UseHtmlBody,
+                IsBodyHtml = SendEmailConstants.UseHtmlBody,
                 Subject = subject,
                 SubjectEncoding = encoding,
                 BodyEncoding = encoding
@@ -187,7 +187,12 @@ namespace Utilities.Term
 
         private void Client_SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            Console.WriteLine(MessageConstants.MailMessageSentSuccessfullyMessage);
+            Console.WriteLine(SendMailMessages.MailMessageSentSuccessfullyMessage);
+        }
+
+        public string WriteHelp()
+        {
+            throw new NotImplementedException();
         }
     }
 }

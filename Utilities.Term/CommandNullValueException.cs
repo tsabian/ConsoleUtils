@@ -5,7 +5,7 @@ namespace Utilities.Term
     {
         private readonly CommandArg command;
 
-        internal CommandNullValueException(CommandArg command) : base(message: $"Ncessário informar o valor do commando {command.Name} ou {command.ShortName}")
+        internal CommandNullValueException(CommandArg command) : base(message: $"Necessário informar o valor do commando {command.Name} ou {command.ShortName}")
         {
             this.command = command;
         }

@@ -4,7 +4,6 @@ namespace Utilities.Term
 {
     internal static class ProgramExtensions
     {
-
         internal static T GetArgValue<T>(this CommandArg current, string[] args)
         {
             if (args.Length == 0)
@@ -39,5 +38,19 @@ namespace Utilities.Term
             }
         }
 
+        internal static ICommand CreateCommand(this Commands selectedCommand, string[] args)
+        {
+            ICommand command = null;
+            switch (selectedCommand)
+            {
+                case Commands.sendMail:
+                    command = new Programs.SendMail.SendMailCommand(args);
+                    break;
+                case Commands.createAccount:
+                    command = new Programs.CreateAccount.CreateAccountCommand(args);
+                    break;
+            }
+            return command;
+        }
     }
 }
