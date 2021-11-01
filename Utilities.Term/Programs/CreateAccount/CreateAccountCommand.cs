@@ -1,22 +1,53 @@
-﻿namespace Utilities.Term.Programs.CreateAccount
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Utilities.Term.Programs.HttpFlow;
+using Utilities.Term.Programs.HttpFlow.Domains;
+
+#nullable enable
+namespace Utilities.Term.Programs.CreateAccount
 {
-    internal class CreateAccountCommand : ICommand
+    public class CreateAccountCommand : ICommand
     {
-        private string[] args { get; }
-
-        internal CreateAccountCommand(string[] args)
+        private readonly string[] _args;
+        private readonly HttpFlow.HttpFlow _httpFlow;
+        
+        public CreateAccountCommand(string[] args, HttpFlow.HttpFlow? httpFlow = null)
         {
-            this.args = args;
+            _args = args;
+            _httpFlow = httpFlow ?? new HttpFlow.HttpFlow();
         }
 
-        public void Execute()
+        public async Task Execute()
         {
-            throw new System.NotImplementedException();
+            var filePath = HttpFlowArgs.FullFilePathArgs.GetArgValue<string>(_args);
+            var json = await GetJsonContent(filePath);
+            var allRequestFlows = JsonSerializer.Deserialize<RequestFlowCollection>(json ?? "[]") ?? 
+                                  new RequestFlowCollection();
+            var firstRequest = allRequestFlows.FirstOrDefault();
+            await _httpFlow.StartFlowAsync(allRequestFlows, firstRequest);
         }
 
-        public string WriteHelp()
+        public void Cancel(Action callback)
         {
-            throw new System.NotImplementedException();
+            _httpFlow.Cancel();
+        }
+        
+        public void WriteHelp()
+        {
+            
+        }
+
+        private static async Task<string?> GetJsonContent(string path)
+        {
+            if (!File.Exists(path)) return null;
+            using StreamReader reader = new(path);
+            var jsonContent = await reader.ReadToEndAsync();
+            reader.Close();
+            return jsonContent;
         }
     }
 }

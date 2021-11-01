@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace Utilities.Term.Programs.SendMail
 {
     internal class SendMailCommand: ICommand
     {
-
         private readonly string[] args;
 
-        private readonly Dictionary<string, string> _templatePixNotification = new() {
+        private readonly IReadOnlyDictionary<string, string> _templatePixNotification = new Dictionary<string, string>() {
             { "cid:Template-geral_01.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_01.png" },
             { "${title}", "Transferência enviada via Pix" },
-            { "${internalBody}", @"
+            { @"
                                                 <tr>
                                                     <td align=""left"" style=""padding:0;padding-bottom:20px;word-break:break-word;"">
                                                         <div
@@ -71,7 +72,7 @@ namespace Utilities.Term.Programs.SendMail
                                                         </p>
                                                     </td>
                                                 </tr>
-" },
+", "${internalBody}" },
             { "cid:Template-geral_04.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_04.png" },
             { "cid:Facebook.png", "https://bitz-email-assets.s3.amazonaws.com/Facebook.png" },
             { "cid:Linkedin.png", "https://bitz-email-assets.s3.amazonaws.com/Linkedin.png" },
@@ -85,17 +86,17 @@ namespace Utilities.Term.Programs.SendMail
             this.args = args;
         }
 
-        public void Execute()
+        public async Task Execute()
         {
             try
             {
-                string path = SendMailArgs.FilePathArg.GetArgValue<string>(args);
-                string body = ReadFile(path);
+                var path = SendMailArgs.FilePathArg.GetArgValue<string>(args);
+                var body = await ReadFile(path);
                 Console.WriteLine(body);
-                NetworkCredential credentials = GetLogin(args);
-                string subject = SendMailArgs.SubjectArg.GetArgValue<string>(args);
-                string destination = SendMailArgs.DestinationArg.GetArgValue<string>(args);
-                string attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(args);
+                var credentials = GetLogin(args);
+                var subject = SendMailArgs.SubjectArg.GetArgValue<string>(args);
+                var destination = SendMailArgs.DestinationArg.GetArgValue<string>(args);
+                var attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(args);
                 SendEmail(subject, body, destination, credentials, attachment);
             }
             catch (FileNotFoundException e)
@@ -108,35 +109,26 @@ namespace Utilities.Term.Programs.SendMail
             }
         }
 
-        private string ReadFile(string filePath)
+        private async Task<string> ReadFile(string filePath)
         {
             if (!File.Exists(filePath)) throw new FileNotFoundException(SendMailMessages.TemplatePathNotFound);
-
-            string fileBody = string.Empty;
-
-            using (StreamReader stream = new(filePath))
-            {
-                fileBody = stream.ReadToEnd();
-            }
-
+            using StreamReader stream = new(filePath);
+            var fileBody = await stream.ReadToEndAsync();
             return TagReplacing(fileBody);
         }
 
         private string TagReplacing(string body)
         {
-            foreach(var tag in _templatePixNotification)
-            {
-                body = body.Replace(tag.Key, tag.Value);
-            }
-            return body;
+            return _templatePixNotification.Aggregate(body, (current, tag) =>
+                current.Replace(tag.Key, tag.Value));
         }
 
-        private NetworkCredential GetLogin(string[] args)
+        private static NetworkCredential GetLogin(string[] args)
         {
-            string username = SendEmailConstants.SmtpUserName;
-            string password = SendEmailConstants.SmtpUserPassword;
-            string paramUserName = SendMailArgs.UserNameArg.GetArgValue<string>(args);
-            string paramUserPassword = SendMailArgs.UserPasswordArg.GetArgValue<string>(args);
+            var username = SendEmailConstants.SmtpUserName;
+            var password = SendEmailConstants.SmtpUserPassword;
+            var paramUserName = SendMailArgs.UserNameArg.GetArgValue<string>(args);
+            var paramUserPassword = SendMailArgs.UserPasswordArg.GetArgValue<string>(args);
 
             if (!string.IsNullOrEmpty(paramUserName) || !string.IsNullOrWhiteSpace(paramUserName))
             {
@@ -164,9 +156,8 @@ namespace Utilities.Term.Programs.SendMail
             client.SendCompleted += Client_SendCompleted;
 
             var encoding = System.Text.Encoding.UTF8;
-
-            string from = credential.UserName;
-            string to = destination;
+            var from = credential.UserName;
+            var to = destination;
             
             MailMessage mailMessage = new(from, to)
             {
@@ -185,14 +176,14 @@ namespace Utilities.Term.Programs.SendMail
             client.Send(mailMessage);
         }
 
-        private void Client_SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private static void Client_SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             Console.WriteLine(SendMailMessages.MailMessageSentSuccessfullyMessage);
         }
 
-        public string WriteHelp()
+        public void WriteHelp()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

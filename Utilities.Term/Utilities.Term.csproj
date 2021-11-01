@@ -16,6 +16,8 @@
     <None Remove="Programs\HttpFlow\Domains\" />
     <None Remove="Programs\CreateAccount\" />
     <None Remove="Programs\CreateAccount\Domain\" />
+    <None Remove="Programs\CreateAccount\Domain\**" />
+    <None Remove="Programs\CreateAccount\Exceptions\**" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Programs\" />
@@ -23,6 +25,17 @@
     <Folder Include="Programs\HttpFlow\" />
     <Folder Include="Programs\HttpFlow\Domains\" />
     <Folder Include="Programs\CreateAccount\" />
-    <Folder Include="Programs\CreateAccount\Domain\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Programs\CreateAccount\Domain\**" />
+    <Compile Remove="Programs\CreateAccount\Exceptions\**" />
+    <Compile Remove="ProgramConstants.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Programs\CreateAccount\Domain\**" />
+    <EmbeddedResource Remove="Programs\CreateAccount\Exceptions\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>

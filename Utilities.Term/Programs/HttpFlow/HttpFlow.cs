@@ -9,27 +9,57 @@ using Utilities.Term.Programs.HttpFlow.Domains;
 #nullable enable
 namespace Utilities.Term.Programs.HttpFlow
 {
-    internal class HttpFlow
+    public sealed class HttpFlow : IHttpFlow
     {
         private HttpClient Client { get; }
+        private readonly CancellationTokenSource _cancellationToken;
 
-        internal HttpFlow(DecompressionMethods decompressionMethods = DecompressionMethods.GZip | DecompressionMethods.Deflate)
+        public HttpFlow(DecompressionMethods decompressionMethods = DecompressionMethods.GZip | DecompressionMethods.Deflate)
         {
             var customHandler = new HttpClientCustomHandler { AutomaticDecompression = decompressionMethods };
             Client = new HttpClient(customHandler);
+            _cancellationToken = new CancellationTokenSource();
         }
 
-        internal async Task<ResponseFlow> Request(RequestFlow requestFlow, CancellationToken cancellationToken)
+        public async Task StartFlowAsync(RequestFlowCollection allRequests, RequestFlow current)
+        {
+            while (true)
+            {
+                if (_cancellationToken.IsCancellationRequested) return;
+
+                var response = await Request(current, _cancellationToken.Token);
+
+                if (current.DelayAfter != null) Thread.Sleep(current.DelayAfter ?? TimeSpan.Zero);
+
+                if (current.ExpectedResults == null) return;
+
+                var next = allRequests.Next(current, response.StatusCode);
+                if (next.HasValue)
+                {
+                    current = next.Value;
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        public void Cancel()
+        {
+            _cancellationToken.Cancel();
+        }
+
+        private async Task<ResponseFlow> Request(RequestFlow requestFlow, CancellationToken cancellationToken)
         {
             Client.DefaultRequestHeaders.Clear();
-            foreach (var header in requestFlow.Headers ?? new Dictionary<string, string>())
+            foreach (var (key, value) in requestFlow.Headers ?? new Dictionary<string, string>())
             {
-                Client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                Client.DefaultRequestHeaders.Add(key, value);
             }
             var uri = new Uri(requestFlow.FullUrl);
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             var httpResponse = await Client.SendAsync(request, cancellationToken);
-            var response = new ResponseFlow()
+            var response = new ResponseFlow
             {
                 StatusCode = (int) httpResponse.StatusCode
             };

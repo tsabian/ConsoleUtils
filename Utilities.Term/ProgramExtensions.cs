@@ -8,7 +8,7 @@ namespace Utilities.Term
         {
             if (args.Length == 0)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(args), MessageConstants.ArgumentsFaultExceptionMessage);
             }
 
             var index = Array.IndexOf(args, current.Name);
@@ -16,12 +16,8 @@ namespace Utilities.Term
             {
                 index = Array.IndexOf(args, current.ShortName);
             }
-
-            if (index == -1)
-            {
-                return default;
-            }
-
+            if (index == -1)  return default;
+            
             index++;
 
             try
@@ -40,16 +36,12 @@ namespace Utilities.Term
 
         internal static ICommand CreateCommand(this Commands selectedCommand, string[] args)
         {
-            ICommand command = null;
-            switch (selectedCommand)
+            ICommand command = selectedCommand switch
             {
-                case Commands.sendMail:
-                    command = new Programs.SendMail.SendMailCommand(args);
-                    break;
-                case Commands.createAccount:
-                    command = new Programs.CreateAccount.CreateAccountCommand(args);
-                    break;
-            }
+                Commands.SendMail => new Programs.SendMail.SendMailCommand(args),
+                Commands.CreateAccount => new Programs.CreateAccount.CreateAccountCommand(args),
+                _ => null
+            };
             return command;
         }
     }

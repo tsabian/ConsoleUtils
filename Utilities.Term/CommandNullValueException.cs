@@ -3,11 +3,12 @@ namespace Utilities.Term
 {
     internal class CommandNullValueException : Exception
     {
-        private readonly CommandArg command;
+        private readonly CommandArg _command;
 
-        internal CommandNullValueException(CommandArg command) : base(message: $"Necessário informar o valor do commando {command.Name} ou {command.ShortName}")
+        internal CommandNullValueException(CommandArg command) : 
+            base($"Necessário informar o valor do commando {command.Name} ou {command.ShortName}")
         {
-            this.command = command;
+            this._command = command;
         }
     }
 }

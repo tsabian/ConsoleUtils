@@ -1,8 +1,10 @@
-﻿namespace Utilities.Term
+﻿using System.Threading.Tasks;
+
+namespace Utilities.Term
 {
-    public interface ICommand
+    internal interface ICommand
     {
-        void Execute();
-        string WriteHelp();
+        Task Execute();
+        void WriteHelp();
     }
 }
