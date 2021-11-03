@@ -28,4 +28,14 @@
       <Compile Remove="UnitTest1.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="HttpFlowTests\createAccount.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="JsonTemplates\CreateAccountTemplate.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

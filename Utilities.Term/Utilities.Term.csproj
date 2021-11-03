@@ -1,41 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>8176da41-7a9d-4203-a3e5-55ec1e7fab9d</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>8176da41-7a9d-4203-a3e5-55ec1e7fab9d</UserSecretsId>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Programs\" />
-    <None Remove="Programs\SendMail\" />
-    <None Remove="Programs\HttpFlow\" />
-    <None Remove="Programs\HttpFlow\Domains\" />
-    <None Remove="Programs\CreateAccount\" />
-    <None Remove="Programs\CreateAccount\Domain\" />
-    <None Remove="Programs\CreateAccount\Domain\**" />
-    <None Remove="Programs\CreateAccount\Exceptions\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Programs\" />
-    <Folder Include="Programs\SendMail\" />
-    <Folder Include="Programs\HttpFlow\" />
-    <Folder Include="Programs\HttpFlow\Domains\" />
-    <Folder Include="Programs\CreateAccount\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Programs\CreateAccount\Domain\**" />
-    <Compile Remove="Programs\CreateAccount\Exceptions\**" />
-    <Compile Remove="ProgramConstants.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Programs\CreateAccount\Domain\**" />
-    <EmbeddedResource Remove="Programs\CreateAccount\Exceptions\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Programs\"/>
+        <None Remove="Programs\SendMail\"/>
+        <None Remove="Programs\HttpFlow\"/>
+        <None Remove="Programs\HttpFlow\Domains\"/>
+        <None Remove="Programs\CreateAccount\"/>
+        <None Remove="Programs\CreateAccount\Domain\"/>
+        <None Remove="Programs\CreateAccount\Domain\**"/>
+        <None Remove="Programs\CreateAccount\Exceptions\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Programs\"/>
+        <Folder Include="Programs\SendMail\"/>
+        <Folder Include="Programs\HttpFlow\"/>
+        <Folder Include="Programs\HttpFlow\Domains\"/>
+        <Folder Include="Programs\CreateAccount\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Programs\CreateAccount\Domain\**"/>
+        <Compile Remove="Programs\CreateAccount\Exceptions\**"/>
+        <Compile Remove="ProgramConstants.cs"/>
+        <Compile Remove="UtilitiesException.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="Programs\CreateAccount\Domain\**"/>
+        <EmbeddedResource Remove="Programs\CreateAccount\Exceptions\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    </ItemGroup>
 </Project>

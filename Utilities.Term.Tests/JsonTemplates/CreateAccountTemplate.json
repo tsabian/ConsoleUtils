@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "Test",
+    "Headers": {
+      "accept": "*"
+    },
+    "Body": {
+      "test": "1"
+    },
+    "FullUrl": "https://localhost:5000/test",
+    "ExpectedResults": [
+      {
+        "StatusCode": 200,
+        "CallbackName": "SuccessTest"
+      },
+      {
+        "StatusCode": 412,
+        "CallbackName": "FailureTest"
+      },
+      {
+        "StatusCode": 500,
+        "CallbackName": "ErrorTest"
+      }
+    ],
+    "DelayAfter": null
+  },
+  {
+    "Name": "Test",
+    "Headers": {
+      "accept": "*"
+    },
+    "Body": null,
+    "FullUrl": "https://localhost:5000/SuccessTest",
+    "ExpectedResults": [ 
+      {
+        "StatusCode": 500,
+        "CallbackName": "ErrorTest"
+      }
+    ],
+    "DelayAfter": null
+  }
+]

@@ -6,97 +6,28 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
+#nullable enable
 namespace Utilities.Term.Programs.SendMail
 {
-    internal class SendMailCommand: ICommand
+    public class SendMailCommand: ICommand
     {
-        private readonly string[] args;
-
-        private readonly IReadOnlyDictionary<string, string> _templatePixNotification = new Dictionary<string, string>() {
-            { "cid:Template-geral_01.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_01.png" },
-            { "${title}", "Transferência enviada via Pix" },
-            { @"
-                                                <tr>
-                                                    <td align=""left"" style=""padding:0;padding-bottom:20px;word-break:break-word;"">
-                                                        <div
-                                                            style=""font-family: 'Ubuntu', sans-serif; font-size:22px; font-weight:bold; line-height:1.5; text-align:left;color:#ef3e64;"">
-                                                            <p>Você recebeu R$ ${amount} via transferência Pix com sucesso</p>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align=""left"" style=""padding:0;padding-bottom:30px;word-break:break-word;"">
-                                                        <p>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            <b>Dados do pagador</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Nome: <b>${payerName}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            CPF/CNPJ: <b>${payerDocument}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Instituição: <b>${payerBankName}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Agência nº: <b>${payerBranch}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Conta nº: <b>${payerAccount}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Tipo: <b>${payerAccountType}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Data e hora: <b>${transactionDate} às ${transactionHour}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Descrição: <b>${payerAnswer}</b>
-                                                        </div>
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align=""left"" style=""padding:0;padding-bottom:30px;word-break:break-word;"">
-                                                        <p>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            <b>Dados do recebedor</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Nome: <b>${receiverName}</b>
-                                                        </div>
-                                                        <div style=""font-family: 'Ubuntu' , sans-serif;  font-size:16px; weight: 500; line-height:2.0; text-align:left; color:#231F20;"">
-                                                            Instituição: <b>${receiverBankName}</b>
-                                                        </div>
-                                                        </p>
-                                                    </td>
-                                                </tr>
-", "${internalBody}" },
-            { "cid:Template-geral_04.png", "https://bitz-email-assets.s3.amazonaws.com/Template-geral_04.png" },
-            { "cid:Facebook.png", "https://bitz-email-assets.s3.amazonaws.com/Facebook.png" },
-            { "cid:Linkedin.png", "https://bitz-email-assets.s3.amazonaws.com/Linkedin.png" },
-            { "cid:Twitter.png", "https://bitz-email-assets.s3.amazonaws.com/Twitter.png" },
-            { "cid:youtube.png", "https://bitz-email-assets.s3.amazonaws.com/youtube.png" },
-            { "cid:Instagram.png", "https://bitz-email-assets.s3.amazonaws.com/Instagram.png" }
-        };
+        private readonly string[] _args;
 
         public SendMailCommand(string[] args)
         {
-            this.args = args;
+            _args = args;
         }
 
         public async Task Execute()
         {
             try
             {
-                var path = SendMailArgs.FilePathArg.GetArgValue<string>(args);
+                var path = SendMailArgs.FilePathArg.GetArgValue<string>(_args);
                 var body = await ReadFile(path);
-                Console.WriteLine(body);
-                var credentials = GetLogin(args);
-                var subject = SendMailArgs.SubjectArg.GetArgValue<string>(args);
-                var destination = SendMailArgs.DestinationArg.GetArgValue<string>(args);
-                var attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(args);
+                var credentials = GetLogin(_args);
+                var subject = SendMailArgs.SubjectArg.GetArgValue<string>(_args);
+                var destination = SendMailArgs.DestinationArg.GetArgValue<string>(_args);
+                var attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(_args);
                 SendEmail(subject, body, destination, credentials, attachment);
             }
             catch (FileNotFoundException e)
@@ -109,17 +40,24 @@ namespace Utilities.Term.Programs.SendMail
             }
         }
 
-        private async Task<string> ReadFile(string filePath)
+        private async Task<string?> ReadFile(string filePath)
         {
             if (!File.Exists(filePath)) throw new FileNotFoundException(SendMailMessages.TemplatePathNotFound);
             using StreamReader stream = new(filePath);
             var fileBody = await stream.ReadToEndAsync();
-            return TagReplacing(fileBody);
+            return await TagReplacing(fileBody);
         }
 
-        private string TagReplacing(string body)
+        private async Task<string?> TagReplacing(string body)
         {
-            return _templatePixNotification.Aggregate(body, (current, tag) =>
+            Dictionary<string, string>? replacementCollection = null;
+            var replacementArg = SendMailArgs.ReplacementFilePathArg.GetArgValue<string>(_args);
+            if (!string.IsNullOrEmpty(replacementArg) && string.IsNullOrWhiteSpace(replacementArg))
+            {
+                replacementCollection =
+                    await Helpers.DeserializeJsonContentAsync<Dictionary<string, string>>(replacementArg);
+            }
+            return replacementCollection?.Aggregate(body, (current, tag) =>
                 current.Replace(tag.Key, tag.Value));
         }
 
@@ -129,7 +67,6 @@ namespace Utilities.Term.Programs.SendMail
             var password = SendEmailConstants.SmtpUserPassword;
             var paramUserName = SendMailArgs.UserNameArg.GetArgValue<string>(args);
             var paramUserPassword = SendMailArgs.UserPasswordArg.GetArgValue<string>(args);
-
             if (!string.IsNullOrEmpty(paramUserName) || !string.IsNullOrWhiteSpace(paramUserName))
             {
                 username = paramUserName;
@@ -141,7 +78,8 @@ namespace Utilities.Term.Programs.SendMail
             return new NetworkCredential(username, password);
         }
 
-        private void SendEmail(string subject, string body, string destination, NetworkCredential credential, string attachmentFilePath = null)
+        private void SendEmail(string subject, string? body, string destination, NetworkCredential credential, 
+            string? attachmentFilePath = null)
         {
             using SmtpClient client = new(SendEmailConstants.SmtpHost, SendEmailConstants.SmtpPort)
             {

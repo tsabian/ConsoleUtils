@@ -9,7 +9,7 @@ using Utilities.Term.Programs.HttpFlow.Domains;
 #nullable enable
 namespace Utilities.Term.Programs.HttpFlow
 {
-    public sealed class HttpFlow : IHttpFlow
+    public class HttpFlow : IHttpFlow
     {
         private HttpClient Client { get; }
         private readonly CancellationTokenSource _cancellationToken;
@@ -26,20 +26,15 @@ namespace Utilities.Term.Programs.HttpFlow
             while (true)
             {
                 if (_cancellationToken.IsCancellationRequested) return;
-
                 var response = await Request(current, _cancellationToken.Token);
-
                 if (current.DelayAfter != null) Thread.Sleep(current.DelayAfter ?? TimeSpan.Zero);
-
                 if (current.ExpectedResults == null) return;
-
                 var next = allRequests.Next(current, response.StatusCode);
                 if (next.HasValue)
                 {
                     current = next.Value;
                     continue;
                 }
-
                 break;
             }
         }
