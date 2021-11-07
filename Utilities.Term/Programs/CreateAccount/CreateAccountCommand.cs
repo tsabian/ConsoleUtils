@@ -11,11 +11,14 @@ namespace Utilities.Term.Programs.CreateAccount
     {
         private readonly string[] _args;
         private readonly HttpFlow.HttpFlow _httpFlow;
-        
+
+        public CommandsStatus Status { get; }
+
         public CreateAccountCommand(string[] args, HttpFlow.HttpFlow? httpFlow = null)
         {
             _args = args;
             _httpFlow = httpFlow ?? new HttpFlow.HttpFlow();
+            Status = CommandsStatus.Started;
         }
 
         public async Task Execute()

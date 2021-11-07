@@ -13,9 +13,13 @@ namespace Utilities.Term.Programs.SendMail
     {
         private readonly string[] _args;
 
+        private CommandsStatus _status;
+        public CommandsStatus Status => _status;
+
         public SendMailCommand(string[] args)
         {
             _args = args;
+            _status = CommandsStatus.Started;
         }
 
         public async Task Execute()
@@ -29,13 +33,16 @@ namespace Utilities.Term.Programs.SendMail
                 var destination = SendMailArgs.DestinationArg.GetArgValue<string>(_args);
                 var attachment = SendMailArgs.AttachmentFilePathArg.GetArgValue<string>(_args);
                 SendEmail(subject, body, destination, credentials, attachment);
+                _status = CommandsStatus.Successfully;
             }
             catch (FileNotFoundException e)
             {
+                _status = CommandsStatus.Failure;
                 Console.WriteLine(e);
             }
             catch (Exception e)
             {
+                _status = CommandsStatus.Failure;
                 Console.WriteLine(e);
             }
         }

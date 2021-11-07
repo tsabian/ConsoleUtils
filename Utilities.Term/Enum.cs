@@ -4,4 +4,11 @@
         SendMail,
         CreateAccount
     }
+
+    public enum CommandsStatus
+    {
+        Started,
+        Successfully,
+        Failure
+    }
 }
